@@ -79,7 +79,7 @@ pub fn segment_video(
 
     debug!("Video segmentation completed successfully");
 
-    let segmented_files: Vec<PathBuf> = std::fs::read_dir(segment_dir)?
+    let mut segmented_files: Vec<PathBuf> = std::fs::read_dir(segment_dir)?
         .filter_map(Result::ok)
         .filter(|entry| entry.path().extension().and_then(|s| s.to_str()) == Some("mp4"))
         .map(|entry| {
@@ -87,6 +87,7 @@ pub fn segment_video(
             path
         })
         .collect();
+    segmented_files.sort();
 
     debug!(
         "Segmented files: count={}, files={:?}",
