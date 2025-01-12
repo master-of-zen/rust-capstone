@@ -30,6 +30,7 @@ sha2 = "0.10"
 hex = "0.4.3"
 futures = "0.3.30"
 tracing-appender = "0.2"
+path_abs = "0.5.1"
 
 [build-dependencies]
 tonic-build = "0.9"

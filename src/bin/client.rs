@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::{Mutex, Semaphore};
 use tracing::{debug, error, info, instrument, warn};
-use video_encoding_system::chunk::{convert_files_to_chunks, verify_ffmpeg};
+use video_encoding_system::chunk::{convert_files_to_chunks, verify_binaries};
 use video_encoding_system::ffmpeg;
 
 pub mod video_encoding {
@@ -51,6 +51,10 @@ struct Cli {
     #[arg(long)]
     encoder_params: Option<Vec<String>>,
 
+    /// Determines method used for concatenating encoded chunks and audio into output file
+    #[arg(short, long, default_value = "ffmpeg", value_parser(["ffmpeg", "mkvmerge"]))]
+    concat: String,
+
     /// Temporary directory for processing
     #[arg(long)]
     temp_dir: Option<PathBuf>,
@@ -86,7 +90,7 @@ async fn main() -> Result<()> {
     debug!("CLI arguments: {:?}", cli);
 
     let settings = load_settings(&cli)?;
-    verify_ffmpeg()?;
+    verify_binaries(&cli.concat)?;
 
     let config = create_temp_config(&settings, &cli.input_file, &cli.output_file);
 
@@ -150,6 +154,7 @@ async fn main() -> Result<()> {
         &PathBuf::from(&cli.output_file),
         &config.temp_dir,
         encoded_chunks.len(),
+        &cli.concat,
     )?;
 
     info!("Video encoding completed successfully");
