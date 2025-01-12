@@ -8,7 +8,7 @@ use video_encoding::video_encoding_service_server::{
     VideoEncodingService, VideoEncodingServiceServer,
 };
 use video_encoding::{EncodeChunkRequest, EncodeChunkResponse};
-use video_encoding_system::chunk::{verify_ffmpeg, Chunk};
+use video_encoding_system::chunk::{verify_binaries, Chunk};
 
 pub mod video_encoding {
     tonic::include_proto!("video_encoding");
@@ -140,7 +140,7 @@ async fn main() -> Result<()> {
 
     let settings = load_settings(&cli)?;
 
-    verify_ffmpeg()?;
+    verify_binaries(&"ffmpeg".to_string())?;
 
     let config = TempConfig::new(
         Some(settings.processing.temp_dir),

@@ -11,6 +11,9 @@ pub enum VideoEncodeError {
     #[error("FFmpeg not found")]
     FfmpegNotFound,
 
+    #[error("MKVMerge not found")]
+    MkvmergeNotFound,
+
     #[error("Serialization error: {0}")]
     Serialization(#[from] serde_json::Error),
 

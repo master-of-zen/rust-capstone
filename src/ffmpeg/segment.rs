@@ -1,3 +1,4 @@
+use crate::error::VideoEncodeError;
 /// This module is responsible for segmenting input file
 /// into multiple independent files which are ready for processing
 /// TODO: separating audio before segmenting
@@ -5,11 +6,9 @@ use std::{
     path::{Path, PathBuf},
     process::Command,
 };
-
-use crate::error::VideoEncodeError;
 use tracing::{debug, error, info, instrument};
 
-use crate::chunk::verify_ffmpeg;
+use crate::chunk::verify_binaries;
 
 /// Due to the nature of method -segment_time
 /// Getting expected number of segments is not
@@ -27,7 +26,7 @@ pub fn segment_video(
         input_path, segment_duration, segment_dir
     );
 
-    verify_ffmpeg()?;
+    verify_binaries(&"ffmpeg".to_string())?;
     debug!("FFmpeg verification successful");
 
     std::fs::create_dir_all(segment_dir)?;

@@ -122,16 +122,28 @@ pub fn split_video(
 ///
 /// A Result indicating success or a VideoEncodeError if FFmpeg is not found
 #[instrument]
-pub fn verify_ffmpeg() -> Result<(), VideoEncodeError> {
+pub fn verify_binaries(concat: &String) -> Result<(), VideoEncodeError> {
     debug!("Verifying FFmpeg installation");
+    let mut result = Ok(());
     match which::which("ffmpeg") {
         Ok(path) => {
-            info!("FFmpeg found at: {:?}", path);
-            Ok(())
+            info!("FFmpeg found at: {path:?}");
         }
         Err(e) => {
             error!("FFmpeg not found: {}", e);
-            Err(VideoEncodeError::FfmpegNotFound)
+            result = Err(VideoEncodeError::FfmpegNotFound);
         }
     }
+    if concat == "mkvmerge" {
+        match which::which("mkvmerge") {
+            Ok(path) => {
+                info!("MKVMerge found at: {path:?}");
+            }
+            Err(e) => {
+                error!("MKVMerge not found: {e}");
+                result = Err(VideoEncodeError::MkvmergeNotFound);
+            }
+        }
+    }
+    result
 }
