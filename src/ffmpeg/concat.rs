@@ -1,7 +1,7 @@
 use crate::error::VideoEncodeError;
 use path_abs::{PathAbs, PathInfo};
 use std::fmt::Write as hi;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -163,11 +163,11 @@ pub fn concatenate_videos_and_copy_streams(
         }
     }
 
+    let temp_file_list = PathBuf::from("file_list.txt");
     let status = if concat == "ffmpeg" {
         // Create a temporary file list for FFmpeg
         // Unfortunately due to current implementation path of the files inside
         // is relative to the file
-        let temp_file_list = PathBuf::from("file_list.txt");
         let file_list_content: String = segment_paths
             .iter()
             .map(|path| format!("file '{}'\n", path.to_str().unwrap()))
@@ -197,7 +197,7 @@ pub fn concatenate_videos_and_copy_streams(
     );
 
     // Clean up temporary file
-    // fs::remove_file(temp_file_list)?;
+    fs::remove_file(temp_file_list)?;
 
     Ok(())
 }
